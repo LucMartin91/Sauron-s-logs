@@ -371,7 +371,7 @@ def print_help():
 
     print(f"{Fore.CYAN}add {Fore.RESET}<répertoire> : Ajoute un répertoire à surveiller.")
 
-    print(f"{Fore.CYAN}remove {Fore.RESET}<répertoire> : Supprime un répertoire de la surveillance.")
+    print(f"{Fore.CYAN}remove {Fore.RESET}<répertoire> (ou * pour supprimer toute la liste): Supprime un répertoire de la surveillance.")
 
     print(f"{Fore.CYAN}list {Fore.RESET}: Affiche la liste des répertoires en cours de surveillance.")
 
