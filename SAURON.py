@@ -62,7 +62,7 @@ print(f"{Fore.CYAN}Oeil de Sauron - Surveillance de répertoires automatisée{Fo
 
 print(f"{Fore.RED}VERSION - {Fore.RESET}V1.0")
 
-print(f"{Fore.RED}MADE BY - {Fore.RESET} lucmartin, nicolasboivin, yoancaillard\n\n\n")
+print(f"{Fore.RED}MADE BY - {Fore.RESET} lucmartin\n\n")
 
 
 class CustomLoggingEventHandler(FileSystemEventHandler):
