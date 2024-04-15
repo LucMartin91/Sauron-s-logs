@@ -20,6 +20,7 @@ from colorama import init, Fore, Style
 
 init()
 
+toggle_logs = True
 
 
 # ASCII art
@@ -27,7 +28,6 @@ init()
 ascii_art = f"""
 
 {Fore.RED}
-
 ....                                 :=*+:      :++=:                                .::::
 ....                              .=*#####*+==+*#####*=.                             .::::
 ...                             .=*####################*=.                           .::::
@@ -50,13 +50,11 @@ ascii_art = f"""
 ....                             .=*##################*=.                            .::::
 ....                               .-*##*+-:..:-+###*-                               .::::
 ....                                  .:.        .:.                                 .::::
-
 {Fore.RESET}{Fore.GREEN}
 
 
-
              ___       _ _      ___       ____    _   _   _ _ __   ___  _   _
- 	    / _ \  ___(_) |   __| | ___  / ___|  / \ | | | | |_ \ / _ \| \ | |
+            / _ \  ___(_) |   __| | ___  / ___|  / \ | | | | |_ \ / _ \| \ | |
  	   | | | |/ _ \ | |  / _` |/ _ \ \___ \ / _ \| | | | |_) | | | |  \| |
  	   | |_| |  __/ | | | (_| |  __/  ___) / ___ \ |_| |  _ <| |_| | |\  |
  	    \___/ \___|_|_|  \____|\___| |____/_/   \_\___/|_| \_\\___/|_| \_|
@@ -98,10 +96,11 @@ class CustomLoggingEventHandler(FileSystemEventHandler):
 
 
     def on_any_event(self, event):
+    
 
         username = self.get_username(event)
 
-        
+        global toggle_logs
 
         # Ignorer les événements "opened" et "closed"
 
@@ -138,24 +137,59 @@ class CustomLoggingEventHandler(FileSystemEventHandler):
                 if old_chmod is None:
 
                     # C'est la première modification de ce fichier, enregistrer le chmod initial
+                    message = f'User {username} performed event: {event.event_type} - {event.src_path}. {Fore.CYAN}Chmod{Fore.RESET} set to {Fore.CYAN}{chmod:o}{Fore.RESET}'
+                    
+                    if toggle_logs:
+                    
+                        print(message)
 
-                    logging.info(f'User {username} performed event: {event.event_type} - {event.src_path}. {Fore.CYAN}Chmod{Fore.RESET} set to {Fore.CYAN}{chmod:o}{Fore.RESET}')
+                    logging.info(f'User {username} performed event: {event.event_type} - {event.src_path}. Chmod set to {chmod:o}')
+                   
 
                 elif chmod != old_chmod:
 
                     # Le fichier a déjà été modifié auparavant, afficher le changement de chmod
 
-                    logging.info(f'User {username} performed event: {event.event_type} - {event.src_path}. {Fore.CYAN}Chmod{Fore.RESET} changed from {Fore.RED}{old_chmod:o}{Fore.RESET} to {Fore.CYAN}{chmod:o}{Fore.RESET}')
+                    message = f'User {username} performed event: {event.event_type} - {event.src_path}. {Fore.CYAN}Chmod{Fore.RESET} changed from {Fore.RED}{old_chmod:o}{Fore.RESET} to {Fore.CYAN}{chmod:o}{Fore.RESET}'
+                    
+                    if toggle_logs:
+                    
+                        print(message)
+                        
+                    logging.info(f'User {username} performed event: {event.event_type} - {event.src_path}. Chmod changed from {old_chmod:o} to {chmod:o}')
 
         elif event.event_type == 'moved':
-
+               
             if event.is_directory:
-
-                logging.info(f'User {username} performed event: directory renamed - {Fore.LIGHTGREEN_EX} {event.src_path}{Fore.RESET} to {Fore.LIGHTGREEN_EX}{event.dest_path}{Fore.RESET}')
-
+                   
+                action = 'directory'
+                      
             else:
+                   
+                action = 'file'
+             
+            src_dir = '/'.join(event.src_path.split('/')[:-1])
+            dest_dir = '/'.join(event.dest_path.split('/')[:-1])
+            
+            if src_dir != dest_dir :  # Check if the source path is different from the destination path
+                   
+                message = f'User {username} performed event: {action} moved - {Fore.LIGHTGREEN_EX}{event.src_path}{Fore.RESET} to {Fore.LIGHTGREEN_EX}{event.dest_path}{Fore.RESET}'
+                
+                if toggle_logs:
+                    print(message)
+                
+                logging.info(f'User {username} performed event: {action} moved - {event.src_path} to {event.dest_path}')
+           
+            else:
+                   
+                message = f'User {username} performed event: {action} renamed - {Fore.LIGHTGREEN_EX}{event.src_path}{Fore.RESET} to {Fore.LIGHTGREEN_EX}{event.dest_path}{Fore.RESET}'
+                
+                if toggle_logs:
+                
+                    print(message)
+                
+                logging.info(f'User {username} performed event: {action} renamed - {event.src_path} to {event.dest_path}')
 
-                logging.info(f'User {username} performed event: file renamed - {Fore.LIGHTGREEN_EX}{event.src_path}{Fore.RESET} to {Fore.LIGHTGREEN_EX}{event.dest_path}{Fore.RESET}')
 
         elif event.event_type == 'deleted':
 
@@ -215,8 +249,6 @@ def remove_directory(directory):
 
     global event_handler
 
-
-
     if directory == "*":
 
         # Arrêter tous les observateurs et vider la liste des répertoires surveillés
@@ -238,8 +270,6 @@ def remove_directory(directory):
         save_directories_to_file()
 
         return
-
-
 
     if directory in event_handler.directories:
 
@@ -265,6 +295,7 @@ def remove_directory(directory):
 
 def add_directory(directory):
 
+
     global observers
 
     global event_handler
@@ -277,8 +308,6 @@ def add_directory(directory):
 
         return
 
-
-
     # Vérifier si le répertoire est déjà surveillé
 
     if directory in event_handler.directories:
@@ -286,8 +315,6 @@ def add_directory(directory):
         print(f"{Fore.RED}Le répertoire '{directory}' est déjà en cours de surveillance.{Fore.RESET}")
 
         return
-
-
 
     # Créer un nouvel observateur pour ce répertoire
 
@@ -298,8 +325,6 @@ def add_directory(directory):
     observer.start()
 
     observers[directory] = observer
-
-
 
     # Stocker les chmods initiaux des fichiers et répertoires dans le répertoire et ses sous-répertoires
 
@@ -339,9 +364,9 @@ def add_directory(directory):
 
                 print(f"{Fore.YELLOW}File not found: {file_path}{Fore.RESET}")
 
+    logging.info(f"Répertoire {directory!r} ajouté à l'Oeil de sauron")
 
-
-    logging.info(f"{Fore.GREEN}Répertoire {Fore.RESET}{directory!r}{Fore.GREEN} ajouté à {Fore.RED}l'Oeil de sauron{Fore.RESET}")
+    
 
     save_directories_to_file()
 
@@ -362,8 +387,24 @@ def list_directories():
             print(f"   - {item} - Chmod: {Fore.CYAN}{chmod:o}{Fore.RESET}")
 
     print("\n\n")
+    
 
+def toggle_log():
 
+    global toggle_logs
+
+    if toggle_logs:
+
+        toggle_logs = False
+
+        print("Logs désactivés")
+
+    else:
+
+        toggle_logs = True
+
+        print("Logs activés")  
+	
 
 def print_help():
 
@@ -413,7 +454,9 @@ if __name__ == "__main__":
 
                         format='\n%(asctime)s - %(message)s',
 
-                        datefmt='%Y-%m-%d %H:%M:%S')
+                        datefmt='%Y-%m-%d %H:%M:%S',
+
+                        handlers=[logging.FileHandler("sauron.log", mode='a')])
 
 
 
@@ -456,6 +499,8 @@ if __name__ == "__main__":
             elif command.strip().lower() == "help":
 
                 print_help()
+            elif command.strip().lower() == "toggle_logs":
+                toggle_log()
 
             else:
 
