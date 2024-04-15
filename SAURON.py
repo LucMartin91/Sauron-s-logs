@@ -401,37 +401,54 @@ def add_directory(directory):
 
 
 def list_directories():
-
     global event_handler
-
     print(f"\n{Fore.BLUE}Liste des répertoires en cours de surveillance :{Fore.RESET}")
 
+    # Parcours de tous les répertoires surveillés
     for directory, files_and_dirs in event_handler.directories.items():
-
         print(f"{Style.BRIGHT}{directory}{Style.RESET_ALL}:")
+        items_to_remove = []  # Liste pour stocker les éléments à retirer
 
+        # Parcours de tous les fichiers et répertoires dans le répertoire surveillé
         for item, chmod in files_and_dirs.items():
+            # Vérifier si le fichier ou le répertoire existe toujours
+            if not os.path.exists(item):
+                items_to_remove.append(item)  # Ajouter l'élément à retirer s'il n'existe plus
+            else:
+                # Afficher le fichier ou le répertoire avec son chmod
+                print(f"   - {item} - Chmod: {Fore.CYAN}{chmod:o}{Fore.RESET}")
 
-            print(f"   - {item} - Chmod: {Fore.CYAN}{chmod:o}{Fore.RESET}")
+        # Retirer les éléments de la liste qui n'existent plus
+        for item in items_to_remove:
+            del files_and_dirs[item]
 
-    print("\n\n")
-    
-
-def toggle_log():
-
-    global toggle_logs
-
-    if toggle_logs:
-
-        toggle_logs = False
-
-        print(f"{Fore.RED}Affichage des logs dans le terminal désactivé{Fore.RESET}")
-
-    else:
-
-        toggle_logs = True
-
-        print(f"{Fore.GREEN}Affichage des logs dans le terminal activé{Fore.RESET}")  
+        # Vérifier et ajouter de nouveaux éléments créés depuis la dernière vérification
+        for root, dirs, files in os.walk(directory):
+            for d in dirs:
+                dir_path = os.path.join(root, d)
+                # Vérifier si le répertoire n'est pas déjà dans la liste surveillée
+                if dir_path not in files_and_dirs:
+                    try:
+                        # Ajouter le répertoire à la liste avec son chmod et l'afficher
+                        files_and_dirs[dir_path] = os.stat(dir_path).st_mode
+                        print(f"   - {dir_path} - Chmod: {Fore.CYAN}{files_and_dirs[dir_path]:o}{Fore.RESET}")
+                    except PermissionError:
+                        print(f"{Fore.YELLOW}Permission denied: {dir_path}{Fore.RESET}")
+                    except FileNotFoundError:
+                        print(f"{Fore.YELLOW}File not found: {dir_path}{Fore.RESET}")
+            for f in files:
+                file_path = os.path.join(root, f)
+                # Vérifier si le fichier n'est pas déjà dans la liste surveillée
+                if file_path not in files_and_dirs:
+                    try:
+                        # Ajouter le fichier à la liste avec son chmod et l'afficher
+                        files_and_dirs[file_path] = os.stat(file_path).st_mode
+                        print(f"   - {file_path} - Chmod: {Fore.CYAN}{files_and_dirs[file_path]:o}{Fore.RESET}")
+                    except PermissionError:
+                        print(f"{Fore.YELLOW}Permission denied: {file_path}{Fore.RESET}")
+                    except FileNotFoundError:
+                        print(f"{Fore.YELLOW}File not found: {file_path}{Fore.RESET}")
+    print("\n\n") 
         
 	
 def print_help():
