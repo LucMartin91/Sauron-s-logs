@@ -399,6 +399,14 @@ def add_directory(directory):
 
     save_directories_to_file()
 
+def toggle_log():
+    global toggle_logs
+    if toggle_logs:
+        toggle_logs = False
+        print(f"{Fore.RED}Affichage des logs dans le terminal désactivé{Fore.RESET}")
+    else:
+        toggle_logs = True
+        print(f"{Fore.GREEN}Affichage des logs dans le terminal activé{Fore.RESET}")  
 
 def list_directories():
     global event_handler
