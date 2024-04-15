@@ -3,7 +3,7 @@
 
 ## Table des Matières
 
-- [Installation]
+- [Dépendances]
 - [Utilisation]
 - [Fonctionnalités]
 - [Gestion des Répertoires]
@@ -16,8 +16,8 @@
 
 L'application "Oeil de Sauron" est un script Python conçu pour la surveillance automatisée des répertoires. Il utilise des événements du système de fichiers pour suivre les modifications, créations, suppressions et déplacements de fichiers et de répertoires.
 
-## Installation
-
+## Dépendances
+Ce script est réservé aux systèmes d'exploitation LINUX.
 Pour installer les dépendances nécessaires au fonctionnement de l'Oeil de Sauron, exécutez la commande suivante dans votre environnement Python:
 
 ```bash
