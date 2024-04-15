@@ -408,6 +408,7 @@ def toggle_log():
         toggle_logs = True
         print(f"{Fore.GREEN}Affichage des logs dans le terminal activé{Fore.RESET}")  
 
+
 def list_directories():
     global event_handler
     print(f"\n{Fore.BLUE}Liste des répertoires en cours de surveillance :{Fore.RESET}")
@@ -423,8 +424,15 @@ def list_directories():
             if not os.path.exists(item):
                 items_to_remove.append(item)  # Ajouter l'élément à retirer s'il n'existe plus
             else:
-                # Afficher le fichier ou le répertoire avec son chmod
-                print(f"   - {item} - Chmod: {Fore.CYAN}{chmod:o}{Fore.RESET}")
+                # Vérifier si le chmod a été modifié depuis la dernière vérification
+                current_chmod = os.stat(item).st_mode
+                if current_chmod != chmod:
+                    print(f"   - {item} - Chmod: {Fore.CYAN}{current_chmod:o} (Updated){Fore.RESET}")
+                    # Mettre à jour le chmod dans la liste des répertoires surveillés
+                    event_handler.directories[directory][item] = current_chmod
+                else:
+                    # Afficher le fichier ou le répertoire avec son chmod
+                    print(f"   - {item} - Chmod: {Fore.CYAN}{chmod:o}{Fore.RESET}")
 
         # Retirer les éléments de la liste qui n'existent plus
         for item in items_to_remove:
@@ -456,7 +464,8 @@ def list_directories():
                         print(f"{Fore.YELLOW}Permission denied: {file_path}{Fore.RESET}")
                     except FileNotFoundError:
                         print(f"{Fore.YELLOW}File not found: {file_path}{Fore.RESET}")
-    print("\n\n") 
+    print("\n\n")
+
         
 	
 def print_help():
