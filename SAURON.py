@@ -1,27 +1,17 @@
 import os
-
 import pwd
-
 import sys
-
 import time
-
 import logging
-
 from watchdog.observers import Observer
-
 from watchdog.events import FileSystemEventHandler
-
 from colorama import init, Fore, Style
-
-
 
 # Initialiser Colorama
 
 init()
 
 toggle_logs = True
-
 
 # ASCII art
 
@@ -52,28 +42,19 @@ ascii_art = f"""
 ....                                  .:.        .:.                                 .::::
 {Fore.RESET}{Fore.GREEN}
 
-
              ___       _ _      ___       ____    _   _   _ _ __   ___  _   _
             / _ \  ___(_) |   __| | ___  / ___|  / \ | | | | |_ \ / _ \| \ | |
  	   | | | |/ _ \ | |  / _` |/ _ \ \___ \ / _ \| | | | |_) | | | |  \| |
  	   | |_| |  __/ | | | (_| |  __/  ___) / ___ \ |_| |  _ <| |_| | |\  |
  	    \___/ \___|_|_|  \____|\___| |____/_/   \_\___/|_| \_\\___/|_| \_|
 
-
-
  {Fore.RESET}
 
-
-
 """
-
-
 
 # Afficher l'ASCII art
 
 print(ascii_art)
-
-
 
 # Afficher le texte supplémentaire
 
@@ -82,7 +63,6 @@ print(f"{Fore.CYAN}Oeil de Sauron - Surveillance de répertoires automatisée{Fo
 print(f"{Fore.RED}VERSION - {Fore.RESET}V1.0")
 
 print(f"{Fore.RED}MADE BY - {Fore.RESET} lucmartin, nicolasboivin, yoancaillard\n\n\n")
-
 
 
 class CustomLoggingEventHandler(FileSystemEventHandler):
@@ -94,9 +74,7 @@ class CustomLoggingEventHandler(FileSystemEventHandler):
         super().__init__()
 
 
-
     def on_any_event(self, event):
-    
 
         username = self.get_username(event)
 
@@ -108,8 +86,6 @@ class CustomLoggingEventHandler(FileSystemEventHandler):
 
             return
 
-        
-
         if event.event_type == 'modified':
 
             if not event.is_directory:
@@ -118,15 +94,11 @@ class CustomLoggingEventHandler(FileSystemEventHandler):
 
                 directory = os.path.dirname(file_path)
 
-                
-
                 # Vérifier si le répertoire est déjà présent dans le dictionnaire
 
                 if directory not in self.directories:
 
-                    self.directories[directory] = {}
-
-                
+                    self.directories[directory] = {}               
 
                 old_chmod = self.directories[directory].get(file_path, None)
 
@@ -143,8 +115,7 @@ class CustomLoggingEventHandler(FileSystemEventHandler):
                     
                         print(message)
 
-                    logging.info(f'User {username} performed event: {event.event_type} - {event.src_path}. Chmod set to {chmod:o}')
-                   
+                    logging.info(f'User {username} performed event: {event.event_type} - {event.src_path}. Chmod set to {chmod:o}')   
 
                 elif chmod != old_chmod:
 
@@ -158,28 +129,30 @@ class CustomLoggingEventHandler(FileSystemEventHandler):
                         
                     logging.info(f'User {username} performed event: {event.event_type} - {event.src_path}. Chmod changed from {old_chmod:o} to {chmod:o}')
 
-        elif event.event_type == 'moved':
-               
-            if event.is_directory:
-                   
-                action = 'directory'
-                      
-            else:
-                   
+        elif event.event_type == 'moved':             
+
+            if event.is_directory:                 
+
+                action = 'directory'                     
+
+            else:                  
+
                 action = 'file'
              
             src_dir = '/'.join(event.src_path.split('/')[:-1])
-            dest_dir = '/'.join(event.dest_path.split('/')[:-1])
-            
+
+            dest_dir = '/'.join(event.dest_path.split('/')[:-1])        
+
             if src_dir != dest_dir :  # Check if the source path is different from the destination path
                    
-                message = f'User {username} performed event: {action} moved - {Fore.LIGHTGREEN_EX}{event.src_path}{Fore.RESET} to {Fore.LIGHTGREEN_EX}{event.dest_path}{Fore.RESET}'
-                
+                message = f'User {username} performed event: {action} moved - {Fore.LIGHTGREEN_EX}{event.src_path}{Fore.RESET} to {Fore.LIGHTGREEN_EX}{event.dest_path}{Fore.RESET}'               
+
                 if toggle_logs:
-                    print(message)
                 
+                    print(message)
+
                 logging.info(f'User {username} performed event: {action} moved - {event.src_path} to {event.dest_path}')
-           
+          
             else:
                    
                 message = f'User {username} performed event: {action} renamed - {Fore.LIGHTGREEN_EX}{event.src_path}{Fore.RESET} to {Fore.LIGHTGREEN_EX}{event.dest_path}{Fore.RESET}'
@@ -187,38 +160,72 @@ class CustomLoggingEventHandler(FileSystemEventHandler):
                 if toggle_logs:
                 
                     print(message)
-                
-                logging.info(f'User {username} performed event: {action} renamed - {event.src_path} to {event.dest_path}')
 
+                logging.info(f'User {username} performed event: {action} renamed - {event.src_path} to {event.dest_path}')
 
         elif event.event_type == 'deleted':
 
             if event.is_directory:
 
-                logging.info(f'User {username} performed event: directory deleted - {Fore.RED}{event.src_path}{Fore.RESET}')
+                message = f'User {username} performed event: directory deleted - {Fore.RED}{event.src_path}{Fore.RESET}'
+                
+                if toggle_logs:
+                    
+                    print(message)
+                
+                logging.info(f'User {username} performed event: directory deleted - {event.src_path}')
 
             else:
 
-                logging.info(f'User {username} performed event: file deleted - {Fore.RED}{event.src_path}{Fore.RESET}')
+                message = f'User {username} performed event: file deleted - {Fore.RED}{event.src_path}{Fore.RESET}'
+                
+                if toggle_logs:
+                
+                    print(message)
+                
+                logging.info(f'User {username} performed event: file deleted - {event.src_path}')
 
         elif event.event_type == 'created':
+        
+            message = f'User {username} performed event: {event.event_type} - {Fore.LIGHTGREEN_EX} {event.src_path}{Fore.RESET}'
+            
+            if toggle_logs:
+                
+                print(message)
 
-            logging.info(f'User {username} performed event: {event.event_type} - {Fore.LIGHTGREEN_EX} {event.src_path}{Fore.RESET}')
+            logging.info(f'User {username} performed event: {event.event_type} - {event.src_path}')
 
         elif event.event_type == 'property_modified':
 
             if event.is_directory:
+            
+                message = f'User {username} performed event: directory properties modified - {Fore.CYAN}{event.src_path}{Fore.RESET}'
+                
+                if toggle_logs:
+                    
+                    print(message)
 
-                logging.info(f'User {username} performed event: directory properties modified - {Fore.CYAN}{event.src_path}{Fore.RESET}')
+                logging.info(f'User {username} performed event: directory properties modified - {event.src_path}')
 
             else:
+            
+                message = f'User {username} performed event: file properties modified - {Fore.CYAN}{event.src_path}{Fore.RESET}'
+                
+                if toggle_logs:
+                    
+                    print(message)
 
-                logging.info(f'User {username} performed event: file properties modified - {Fore.CYAN}{event.src_path}{Fore.RESET}')
+                logging.info(f'User {username} performed event: file properties modified - {event.src_path}')
 
         else:
+        
+            message = f'User {username} performed event: {event.event_type} - {event.src_path}'
+            
+            if toggle_logs:
+                
+                print(message)
 
             logging.info(f'User {username} performed event: {event.event_type} - {event.src_path}')
-
 
 
     def get_username(self, event):
@@ -242,13 +249,14 @@ class CustomLoggingEventHandler(FileSystemEventHandler):
             return "System"
 
 
-
 def remove_directory(directory):
 
     global observers
 
     global event_handler
-
+    
+    global toggle_logs
+    
     if directory == "*":
 
         # Arrêter tous les observateurs et vider la liste des répertoires surveillés
@@ -262,8 +270,10 @@ def remove_directory(directory):
         observers.clear()
 
         event_handler.directories.clear()
+        
+        print(f"{Fore.GREEN}Tous les répertoires ont été retirés de l'Oeil de Sauron.{Fore.RESET}")
 
-        logging.info(f"{Fore.GREEN}Tous les répertoires ont été retirés de l'Oeil de Sauron.{Fore.RESET}")
+        logging.info(f"Tous les répertoires ont été retirés de l'Oeil de Sauron")
 
         # Sauvegarder les modifications dans le fichier
 
@@ -282,19 +292,21 @@ def remove_directory(directory):
         del observers[directory]
 
         del event_handler.directories[directory]
+        
+        print(f"{Fore.GREEN}Répertoire {Fore.RESET} {directory!r} {Fore.GREEN} retiré de{Fore.RESET}{Fore.RED} l'Oeil de Sauron{Fore.RESET}")
 
-        logging.info(f"{Fore.GREEN}Répertoire {Fore.RESET} {directory!r} {Fore.GREEN} retiré de{Fore.RESET}{Fore.RED} l'Oeil de Sauron{Fore.RESET}")
+        logging.info(f"Répertoire {directory!r} retiré de l'Oeil de Sauron")
 
         save_directories_to_file()
 
     else:
+    
+        print(f"{Fore.RED}Le répertoire{Fore.RESET} {directory!r}{Fore.RED} n'est pas listé dans l'Oeil de Sauron{Fore.RESET}")
 
-        logging.info(f"{Fore.RED}Le répertoire{Fore.RESET} {directory!r}{Fore.RED} n'est pas listé dans l'Oeil de Sauron{Fore.RESET}")
-
+        logging.info(f"Tentative de suppression de surveillance ratée : Le répertoire {directory!r} n'est pas listé dans l'Oeil de Sauron ")
 
 
 def add_directory(directory):
-
 
     global observers
 
@@ -305,6 +317,8 @@ def add_directory(directory):
     if not os.path.exists(directory):
 
         print(f"{Fore.RED}Le répertoire spécifié n'existe pas.{Fore.RESET}")
+        
+        logging.info(f"Tentative d'ajout de surveillance échoué : Le répertoire {directory!r} n'existe pas.")
 
         return
 
@@ -313,7 +327,9 @@ def add_directory(directory):
     if directory in event_handler.directories:
 
         print(f"{Fore.RED}Le répertoire '{directory}' est déjà en cours de surveillance.{Fore.RESET}")
-
+	
+        logging.info(f"Tentative d'ajout de surveillance échoué : Le répertoire {directory!r} est déjà en cours de surveillance.")
+	
         return
 
     # Créer un nouvel observateur pour ce répertoire
@@ -366,10 +382,9 @@ def add_directory(directory):
 
     logging.info(f"Répertoire {directory!r} ajouté à l'Oeil de sauron")
 
-    
+    print(f"Répertoire {Fore.CYAN}{directory!r}{Fore.RESET} ajouté à l'Oeil de sauron")
 
     save_directories_to_file()
-
 
 
 def list_directories():
@@ -397,15 +412,15 @@ def toggle_log():
 
         toggle_logs = False
 
-        print("Logs désactivés")
+        print(f"{Fore.RED}Affichage des logs dans le terminal désactivé{Fore.RESET}")
 
     else:
 
         toggle_logs = True
 
-        print("Logs activés")  
+        print(f"{Fore.GREEN}Affichage des logs dans le terminal activé{Fore.RESET}")  
+        
 	
-
 def print_help():
 
     print(f"\n{Fore.YELLOW}Liste des commandes disponibles :{Fore.RESET}\n")
@@ -415,9 +430,10 @@ def print_help():
     print(f"{Fore.CYAN}remove {Fore.RESET}<répertoire> (ou * pour supprimer toute la liste): Supprime un répertoire de la surveillance.")
 
     print(f"{Fore.CYAN}list {Fore.RESET}: Affiche la liste des répertoires en cours de surveillance.")
+    
+    print(f"{Fore.CYAN}toggle_logs {Fore.RESET}: Affiche ou cache les logs directement depuis le terminal")
 
     print(f"{Fore.CYAN}help {Fore.RESET}: Affiche cette aide.\n\n")
-
 
 
 def save_directories_to_file():
@@ -427,7 +443,6 @@ def save_directories_to_file():
         for directory in event_handler.directories:
 
             file.write(directory + '\n')
-
 
 
 def load_directories_from_file():
@@ -447,7 +462,6 @@ def load_directories_from_file():
         print(f"{Fore.YELLOW}Aucun fichier de surveillance trouvé. Un nouveau fichier sera créé lors de l'ajout du premier répertoire.{Fore.RESET}")
 
 
-
 if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO,
@@ -458,19 +472,13 @@ if __name__ == "__main__":
 
                         handlers=[logging.FileHandler("sauron.log", mode='a')])
 
-
-
     observers = {}
 
     event_handler = CustomLoggingEventHandler()
 
-
-
     # Charger les répertoires à surveiller depuis le fichier au démarrage
 
     load_directories_from_file()
-
-
 
     try:
 
