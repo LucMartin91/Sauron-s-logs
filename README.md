@@ -28,7 +28,7 @@ pip install watchdog colorama
 
 Pour démarrer le script, exécutez le fichier principal depuis votre terminal:
 ```python
-python3 oeildesauron.py
+python3 sauron.py
 ```
 
 ## Fonctionnalités
