@@ -62,7 +62,7 @@ print(f"{Fore.CYAN}Oeil de Sauron - Surveillance de répertoires automatisée{Fo
 
 print(f"{Fore.RED}VERSION - {Fore.RESET}V1.0")
 
-print(f"{Fore.RED}MADE BY - {Fore.RESET} lucmartin\n\n")
+print(f"{Fore.RED}MADE BY - {Fore.RESET} lucmartin, yoanncaillard, nicolasboivin\n\n")
 
 
 class CustomLoggingEventHandler(FileSystemEventHandler):
@@ -78,7 +78,13 @@ class CustomLoggingEventHandler(FileSystemEventHandler):
 
         username = self.get_username(event)
 
-        global toggle_logs
+        global toggle_logs     
+        
+        if not os.path.exists("sauron.log"):
+        
+                print(f"{Fore.RED}ERREUR CRITIQUE:{Fore.RESET} Le fichier {Fore.CYAN}sauron.log{Fore.RESET} a été supprimé. Expulsion du programme imminente.")
+                
+                exit()
 
         # Ignorer les événements "opened" et "closed"
 
@@ -101,8 +107,15 @@ class CustomLoggingEventHandler(FileSystemEventHandler):
                     self.directories[directory] = {}               
 
                 old_chmod = self.directories[directory].get(file_path, None)
-
-                chmod = os.stat(file_path).st_mode
+                
+                if os.path.exists(file_path):
+                    chmod = os.stat(file_path).st_mode
+                
+                else:
+                
+                    # Le fichier ou le répertoire n'existe pas, donc nous n'avons pas de chmod à récupérer
+                    
+                    return
 
                 self.directories[directory][file_path] = chmod
 
@@ -479,20 +492,32 @@ if __name__ == "__main__":
     # Charger les répertoires à surveiller depuis le fichier au démarrage
 
     load_directories_from_file()
+    
 
     try:
 
         while True:
+        
+        
 
             time.sleep(1)
 
             command = input(f"{Fore.GREEN}> Entrez une commande {Fore.RESET} (add <répertoire>, remove <répertoire>, list, help...){Fore.GREEN}:{Fore.RESET} ")
+            
+            #Check si le fichier de logs existe toujours, sinon expulsion du script.
+            
+            if not os.path.exists("sauron.log"):
+                print(f"{Fore.RED}ERREUR CRITIQUE:{Fore.RESET} Le fichier {Fore.CYAN}sauron.log{Fore.RESET} a été supprimé. Expulsion du programme imminente.")
+                exit()
+                        
 
             if command.strip().lower().startswith("add "):
+            
 
-                directory = command.split(maxsplit=1)[1].strip()
-
+                directory = command.split(maxsplit=1)[1].strip()             
+                    
                 add_directory(directory)
+                
 
             elif command.strip().lower().startswith("remove "):
 
@@ -521,4 +546,3 @@ if __name__ == "__main__":
             observer.stop()
 
             observer.join()
-
