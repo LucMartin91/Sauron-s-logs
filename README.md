@@ -78,21 +78,29 @@ Ajouter un répertoire à surveiller :
 ``` bash
 > Entrez une commande : add <chemin_du_répertoire>
 ```
+Le chemin demandé est le chemin accessible depuis la racine. Selon vos droits d'accès, certians fichiers ou dossiers ne seront pas surveillables. Le script vous affichera donc une erreur orange stipulant "permission denied"
 
 Supprimer un répertoire de la surveillance :
 ``` bash
 > Entrez une commande : remove <chemin_du_répertoire>
 ```
+Il est possible d'utiliser l'argument * plutôt qu'un chemin pour vider entièrement la liste de surveillance. Ca aura par conséquent pour effet de vider le fichier directories.txt, qui stock les répertoires surveillés en temps réel.
 
 Lister les répertoires actuellement surveillés :
 ``` bash
 > Entrez une commande : list
 ```
 
+activer ou désactiver l'affichage des logs directement dans le terminal (avec couleurs :
+``` bash
+> Entrez une commande : toggle_logs
+```
 ## Dépannage
 
-- **Journaux manquants** : Assurez-vous que `sauron.log` existe dans le répertoire de l'application. Si supprimé, redémarrez l'application.
+- **Journaux manquants** : Assurez-vous que `sauron.log` existe dans le répertoire de l'application. Si supprimé, l'application se fermera après un message d'erreur lors de votre prochaine exécution de commande.
 - **Erreurs de permission** : Exécutez l'application avec les permissions appropriées pour accéder aux répertoires spécifiés.
+- **Fichiers temporaires** : Si vous ajoutez des répertoires trop larges, qui peuvent contenir énormément de fichiers temporaires, votre fichier de log peut très vite être spammé de notifications.
+
 
 ## Contributeurs
 
