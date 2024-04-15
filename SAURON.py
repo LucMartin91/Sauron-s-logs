@@ -11,7 +11,7 @@ from colorama import init, Fore, Style
 
 init()
 
-toggle_logs = True
+toggle_logs = False
 
 # ASCII art
 
