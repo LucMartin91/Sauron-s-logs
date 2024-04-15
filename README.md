@@ -5,18 +5,6 @@
 
 - [Installation]
 - [Utilisation]
-Afficher plus
-Oeil_de_Sauron_-_README.md
-4 Ko
-﻿
-LeakData 自殺
-leakdata
-# Oeil de Sauron - Surveillance de Répertoires Automatisée
-
-## Table des Matières
-
-- [Installation]
-- [Utilisation]
 - [Fonctionnalités]
 - [Gestion des Répertoires]
 - [Gestion des Journaux]
