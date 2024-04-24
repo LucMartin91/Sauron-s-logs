@@ -30,7 +30,7 @@ Pour démarrer le script, exécutez le fichier principal depuis votre terminal:
 ```python
 python3 sauron.py
 ```
-
+Assurez vous de récupérer le contenu de key.txt pour pouvoir entrer votre mot de passe et accéder au script. Ce fichier key.txt peut être hébergé sur un autre serveur pour éviter à n'importe quel utilisateur d'y avoir accès. Vous pourrez modifier les premières lignes du code concernant le mot de passe en conséquence.
 ## Fonctionnalités
 
 - **Surveillance en Temps Réel** : Détecte les modifications, créations, suppressions, et déplacements de fichiers et de répertoires.
