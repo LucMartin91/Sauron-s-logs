@@ -7,6 +7,38 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from colorama import init, Fore, Style
 
+# Chemin vers le fichier contenant la clé
+key_file_path = "key.txt"
+
+# Vérifier si le fichier contenant la clé existe
+if os.path.exists(key_file_path):
+	
+    # Lire la clé depuis le fichier
+    with open(key_file_path, "r") as key_file:
+	    
+        correct_key = key_file.read().strip()
+        
+    # Demander à l'utilisateur de saisir la clé
+    entered_key = input("Veuillez entrer la clé pour lancer le script : ").strip()
+    
+    # Vérifier si la clé saisie par l'utilisateur est correcte
+    if entered_key == correct_key:
+	    
+        # Clé correcte, permettre l'exécution du script
+        print("Clé correcte. Lancement du script...")
+	    
+    else:
+        # Clé incorrecte, refuser l'exécution du script
+        print("Clé incorrecte. Impossible de lancer le script.")
+	    
+        os._exit(0)
+	    
+else:
+    print("Fichier de clé introuvable. Assurez-vous que le fichier 'key.txt' contenant la clé se trouve dans le même répertoire que le script.")
+	
+    os._exit(0)
+print(ascii_art)
+
 # Initialiser Colorama
 
 init()
